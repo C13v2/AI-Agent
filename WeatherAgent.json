@@ -1,0 +1,276 @@
+{
+  "name": "WeatherAgent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            },
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        -96
+      ],
+      "id": "91a7c5cc-aedc-4efc-a9a6-11709c22b75b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        144
+      ],
+      "id": "e23fa489-6d6c-4248-803f-b471ba2113bc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Credentialid",
+          "name": "Name account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "cityName": "Verona, VR"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        256,
+        192
+      ],
+      "id": "eb514e8c-fea1-4207-8a2d-861bd47865e7",
+      "name": "Meteo Verona",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "CredentialID",
+          "name": "Name account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "cityName": "Padova, PD"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        368,
+        192
+      ],
+      "id": "5760fd19-0259-4200-a5f6-f816cc2ba470",
+      "name": "Meteo Padova",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "CredentialID",
+          "name": "Name account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "cityName": "Sciacca, AG"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        480,
+        192
+      ],
+      "id": "b08cc032-a3ae-4594-b8a2-dac847fc5caf",
+      "name": "Meteo Sciacca",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "CredentialID",
+          "name": "Name account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "cityName": "Palermo, PA"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        592,
+        192
+      ],
+      "id": "add47451-0478-42b3-a589-0817e6bfb65c",
+      "name": "Meteo Palermo",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "CredentialID",
+          "name": "Nameaccount"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "recipient's email",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        688,
+        16
+      ],
+      "id": "84026d07-64bb-4ea2-ab09-053f256be3e8",
+      "name": "Send a message in Gmail",
+      "webhookId": "b4318963-9d3c-4d08-bbdb-b19d64ae7d0b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CredentialID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are an assistant that prepares a short and clear daily weather update email.  \n\nTask:\n- Every day at 6:00 AM, collect the current weather data (minimum and maximum temperature, sky condition, rain probability) for Palermo, Sciacca, Verona, and Padova.  \n- Write a polite and concise good morning email addressed to the family.  \n- For each city, include:\n  - Sky condition (e.g., sunny, cloudy, rainy, etc.)\n  - Minimum and maximum temperature  \n- Add practical advice:\n  - If rain is likely, remind people in that city to bring an umbrella.  \n  - Suggest what kind of jacket or clothing is appropriate (light jacket, medium jacket, heavy coat).  \n\nOutput format:  \n\n**Subject:** Good Morning – Today’s Weather Update  \n\n**Body:**  \nGood morning everyone,  \nhere’s today’s forecast:  \n\n- Palermo: [condition], min [X]°C / max [Y]°C  \n- Sciacca: [condition], min [X]°C / max [Y]°C  \n- Verona: [condition], min [X]°C / max [Y]°C  \n- Padova: [condition], min [X]°C / max [Y]°C  \n\nAdvice: Wear [type of jacket]. [Umbrella suggestion if needed].  \n\nHave a great day!  \n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        -96
+      ],
+      "id": "ad4638d2-f685-4103-8d56-380708747105",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        144
+      ],
+      "id": "ca75acbe-2bfd-4237-9e9e-c94a83c9c82d",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meteo Verona": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meteo Padova": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meteo Sciacca": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meteo Palermo": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5f65e9a0-f287-4705-986f-bdfdff24b208",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "39133848c2cb5bf5e60ac8a9feef02fa9efee624eaea395e2184143bcaa5b0a9"
+  },
+  "id": "H8maZm8LnXv7uG8x",
+  "tags": []
+}
