@@ -1,0 +1,281 @@
+{
+  "name": "Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -352,
+        -32
+      ],
+      "id": "aa34cfd8-19ae-47a1-923e-969d8827ccdb",
+      "name": "Telegram Trigger",
+      "webhookId": "aa467d4a-fe22-4975-b925-0365477cb18a"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a multi-purpose assistant that manages three specialized agents:  \n1. Email Assistant (handles incoming/outgoing emails)  \n2. Calendar Assistant (schedules, updates, or cancels events)  \n3. Research Assistant (finds updated information on the internet)  \n\nWorkflow rules:  \n- Input comes from Telegram messages written by users.  \n- Always identify the intent of the message:  \n  - [EMAIL] → The user wants to write, reply to, or manage an email.  \n  - [CALENDAR] → The user wants to create, update, delete, or check an event.  \n  - [RESEARCH] → The user is asking for information that requires searching online.  \n- If the request requires personal details (like sending an email or invitation), look up the person in the Google Sheet (names, emails, phone numbers).  \n- Route the task to the correct specialized agent (Email, Calendar, Research).  \n- Collect the structured output from the specialized agent.  \n- Always generate a **final short reply** that is sent back to the user on Telegram, confirming the action or providing the requested information.  \n\nOutput format for Telegram:  \n- Direct, short confirmation or answer to the user’s request.  \n- If relevant, include key details (date, time, summary, result).  \n- Keep it simple and user-friendly.  \n\nExamples:  \n1. User: “Please send an email to Marco about the meeting notes.”  \n   - Action: [EMAIL]  \n   - Look up Marco’s email in the sheet.  \n   - Output to Telegram: “✅ Email drafted and sent to Marco (marco@email.com).”  \n\n2. User: “Can you schedule a call with Anna tomorrow at 15:00?”  \n   - Action: [CALENDAR]  \n   - Look up Anna’s contact in the sheet.  \n   - Output to Telegram: “📅 Call with Anna scheduled for tomorrow at 15:00.”  \n\n3. User: “What’s the weather like in Madrid today?”  \n   - Action: [RESEARCH]  \n   - Perform a search.  \n   - Output to Telegram: “☀️ Today in Madrid: Sunny, 22°C.”  \n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "CredentialID",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        176
+      ],
+      "id": "a8930857-1280-4501-a048-42aeb93400cd",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "CredentialID",
+          "name": "Name account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        176
+      ],
+      "id": "239d3ff8-d5a8-4e3b-a3b3-4f7556bd5162",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        304
+      ],
+      "id": "20ce27c6-838d-44dc-9126-6d9fc774aa91",
+      "name": "Contact Database"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        -32
+      ],
+      "id": "5544d39d-5ef8-4bcc-b7a3-325f8e96f6b2",
+      "name": "Response",
+      "webhookId": "69d1d8f1-40db-4649-8230-fdc444920036"
+    },
+    {
+      "parameters": {
+        "description": "Call this agent when using Calendar.",
+        "workflowId": {
+          "__rl": true,
+          "value": "yobnswMiB5cU9cV9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/yobnswMiB5cU9cV9",
+          "cachedResultName": "Calendar"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        304
+      ],
+      "id": "CredentialID",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "description": "Call this agent to take action in emal.",
+        "workflowId": {
+          "__rl": true,
+          "value": "4ux8iX8j34sFIe21",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/4ux8iX8j34sFIe21",
+          "cachedResultName": "Email"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        304
+      ],
+      "id": "CredentialID",
+      "name": "Email Agent"
+    },
+    {
+      "parameters": {
+        "description": "Call this agent to do research.",
+        "workflowId": {
+          "__rl": true,
+          "value": "c5adze8k9OFULO2S",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/c5adze8k9OFULO2S",
+          "cachedResultName": "Researcher"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        304
+      ],
+      "id": "CredentialID",
+      "name": "Researcher Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Database": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Researcher Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "83f952c7-1ac4-403a-97e5-5dc355acba43",
+  "meta": {
+    "instanceId": "39133848c2cb5bf5e60ac8a9feef02fa9efee624eaea395e2184143bcaa5b0a9"
+  },
+  "id": "CredentialID",
+  "tags": []
+}

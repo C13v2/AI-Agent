@@ -1,0 +1,194 @@
+{
+  "name": "Email Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are an email assistant.  \nYour job is to read incoming emails, understand the content and intent, and then draft a clear, professional, and polite reply.  \n\nRules:  \n- Always keep replies concise and to the point.  \n- Use a friendly but professional tone.  \n- Summarize the key request or question from the incoming email before replying.  \n- If the email asks for information you don’t have, respond politely and suggest possible next steps.  \n- If the email is just informational (no reply required), write: “No reply needed.”  \n\nOutput format for Gmail integration:  \n- Subject: [Short, relevant subject line]  \n- Body: [Drafted email text ready to send]  \n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "CredentialID",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        224
+      ],
+      "id": "CredentialID",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "JzX5PwhCa9On8Y1E",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        352,
+        224
+      ],
+      "id": "CredentialID",
+      "name": "Send a message in Gmail",
+      "webhookId": "e21e8f5b-c5c7-4381-ac05-3097779b9f75",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CredentialID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', ``, 'number') }}",
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        512,
+        224
+      ],
+      "id": "d3947ead-d68f-4f66-862f-931616d8877c",
+      "name": "Get many messages in Gmail",
+      "webhookId": "e30f4583-388b-450c-8b60-8f91045856e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CredentialID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "CredentialID",
+              "name": "=",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "CredentialID",
+      "name": "Response"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "CredentialID",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c6a3ae78-8779-4f6f-ba41-510f9199c6c3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "39133848c2cb5bf5e60ac8a9feef02fa9efee624eaea395e2184143bcaa5b0a9"
+  },
+  "id": "CredentialID",
+  "tags": []
+}
